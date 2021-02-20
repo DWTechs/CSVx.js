@@ -1,0 +1,21 @@
+{
+  "src/ts/build/csvx.js": {
+    "bundled": 6206,
+    "minified": 2862,
+    "gzipped": 1130,
+    "treeshaked": {
+      "rollup": {
+        "code": 27,
+        "import_statements": 27
+      },
+      "webpack": {
+        "code": 2080
+      }
+    }
+  },
+  "src/ts/build/csvx.iife.js": {
+    "bundled": 9909,
+    "minified": 4061,
+    "gzipped": 1667
+  }
+}
