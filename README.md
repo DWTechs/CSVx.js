@@ -40,7 +40,7 @@ $ yarn add @dwtechs/csvx
 import { Export, Convert } from '@dwtechs/csvx';
 
 // Convert an array to CSV file
-let array = [
+const array = [
   {
     firstname:'Galileo',
     lastname:'Galiléi',
@@ -61,14 +61,14 @@ let array = [
     died:1955
   }
 ];
-let customLabels = {
+const customLabels = {
   firstname: 'First name',
   lastname: 'Last name', 
   city: 'City',
   born: 'Born',
   died: 'Died'
 };
-let exportButton = document.getElementById('csv');
+const exportButton = document.getElementById('csv');
 exportButton.addEventListener('click', function() {
   Export.data('scientists',array,{separator: ';', customLabels: customLabels});// ; separator for excel friendly imports
 });
@@ -80,6 +80,51 @@ let data = '"Firstname";"Lastname";"Born";"Died"\r\n\
 "Albert";"Einstein";"1879";"1955"';
 
 document.getElementById("table").innerHTML = Convert.table(data,{separator: ';'}, {table: 'table table-striped'});
+```
+
+### TYPESCRIPT
+
+```html
+<button (click)="exportCSV()">Export CSV</button> <!-- ANGULAR -->
+```
+
+```javascript
+import { Export, Data } from '@dwtechs/csvx';
+
+public exportCSV():void {
+
+  const array: Data[] = [
+    {
+      firstname:'Galileo',
+      lastname:'Galiléi',
+      born:1564,
+      died:1642
+    },
+    {
+      firstname:'Nikola',
+      lastname:'Tesla',
+      city:'Smiljan',
+      born:1856,
+      died:1943
+    },
+    {
+      firstname:'Albert',
+      born:1879,
+      lastname:'Einstein',
+      died:1955
+    }
+  ];
+  const customLabels = {
+    firstname: 'First name',
+    lastname: 'Last name', 
+    city: 'City',
+    born: 'Born',
+    died: 'Died'
+  };
+
+  Export.data('scientists', array, {separator: ';', customLabels: customLabels});
+
+}
 ```
 
 ### IIFE
