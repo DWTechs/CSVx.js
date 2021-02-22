@@ -1,6 +1,6 @@
 Version 0.2.4 (February 22th 2021)
 -----------------------------
-- simplified data typing for TypeScript
+- Simplified data typing for TypeScript
 
 Version 0.2.3 (February 18th 2021)
 -----------------------------
