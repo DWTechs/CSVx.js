@@ -15,5 +15,3 @@ export interface CSS {
   th: string;
   [key: string]: String;
 }
-
-export interface Data { [key: string]: number|string }

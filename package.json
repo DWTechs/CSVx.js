@@ -1,6 +1,6 @@
 {
   "name": "@dwtechs/csvx",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "CSV Export library written in TypeScript.",
   "keywords": [],
   "homepage": "https://github.com/DWTechs/CSVx.js",

@@ -39,7 +39,9 @@ export declare class Convert {
 
 export declare class Export {
     static options: Options;
-    static data(filename: string, data: Data[], options?: Partial<Options>): boolean;
+    static data(filename: string, data: {
+        [key: string]: number | string;
+    }[], options?: Partial<Options>): boolean;
     static setOptions(options: Partial<Options>): void;
     private static download;
     private static createTable;
@@ -67,7 +69,4 @@ export interface CSS {
     table: string;
     th: string;
     [key: string]: String;
-}
-export interface Data {
-    [key: string]: number | string;
 }

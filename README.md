@@ -89,11 +89,11 @@ document.getElementById("table").innerHTML = Convert.table(data,{separator: ';'}
 ```
 
 ```javascript
-import { Export, Data } from '@dwtechs/csvx';
+import { Export } from '@dwtechs/csvx';
 
 public exportCSV():void {
 
-  const array: Data[] = [
+  const array = [
     {
       firstname:'Galileo',
       lastname:'Galiléi',
@@ -195,11 +195,9 @@ class Convert {
 
 class Export {
   // Export CSV file
-  static data(filename: string, data: Data[], options?: Partial<Options>): boolean;
+  static data(filename: string, data: { [key: string]: number|string }[], options?: Partial<Options>): boolean;
   static setOptions(options: Partial<Options>): void;
 }
-
-interface Data { [key: string]: number|string }[]
 
 interface Options {
   data?: string; // default : 'text/csv'

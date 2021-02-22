@@ -1,4 +1,4 @@
-import { Options, Data } from './interfaces';
+import { Options } from './interfaces';
 import { isObject } from '@dwtechs/checkhard';
 
 export class Export {
@@ -16,7 +16,7 @@ export class Export {
   }
 
   public static data( filename: string,
-                      data: Data[],
+                      data: { [key: string]: number|string }[],
                       options?: Partial<Options>
                     ): boolean {
     
@@ -72,13 +72,13 @@ export class Export {
     }
   }
 
-  private static createTable( data: Data[] ): string {
+  private static createTable( data: { [key: string]: number|string }[] ): string {
     let table: string = '';
     for (let row of data) {
       let parsedRow: string = '';
       for (let property in this.options.customLabels) {
         if (this.options.customLabels.hasOwnProperty(property)) {
-          parsedRow += this.createField(row[property] ?? '');
+          parsedRow += this.createField((row[property] as string|number) ?? '');
         }
       }
       table += this.createRow(parsedRow);
@@ -86,7 +86,7 @@ export class Export {
     return table;
   }
 
-  private static createLabels (data: Data[]): string[] {
+  private static createLabels (data: { [key: string]: number|string }[]): string[] {
     let params: string[] = [];
     for (let row of data) {
       let i = 0;
