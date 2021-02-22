@@ -93,7 +93,7 @@ import { Export } from '@dwtechs/csvx';
 
 public exportCSV():void {
 
-  const array = [
+  const array: { [key: string]: string | number; }[] = [
     {
       firstname:'Galileo',
       lastname:'Galiléi',
