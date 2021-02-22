@@ -82,7 +82,7 @@ const data = '"Firstname";"Lastname";"Born";"Died"\r\n\
 document.getElementById("table").innerHTML = Convert.table(data,{separator: ';'}, {table: 'table table-striped'});
 ```
 
-### TYPESCRIPT
+### TypeScript
 
 ```html
 <button (click)="exportCSV()">Export CSV</button> <!-- ANGULAR -->
