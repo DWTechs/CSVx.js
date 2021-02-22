@@ -26,7 +26,7 @@
     "build": "npm run clean && tsc && npm run rollup && grunt declaration && npm run banner && npm run uglify && grunt website && npm run serve",
     "clean": "rimraf dist/* src/ts/build/*",
     "rollup": "rollup --config rollup.config.mjs && rollup --config rollup.config.js",
-    "banner": "cat license.js src/ts/build/csvx.js > dist/csvx.js && cat license.js src/ts/build/csvx.iife.js > dist/csvx.iife.js",
+    "banner": "cat lic.js src/ts/build/csvx.js > dist/csvx.js && cat lic.js src/ts/build/csvx.iife.js > dist/csvx.iife.js",
     "uglify": "grunt ugly",
     "serve": "grunt serve"
   },
