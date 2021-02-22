@@ -74,7 +74,7 @@ exportButton.addEventListener('click', function() {
 });
 
 // Convert CSV data to HTML table
-let data = '"Firstname";"Lastname";"Born";"Died"\r\n\
+const data = '"Firstname";"Lastname";"Born";"Died"\r\n\
 "Galileo";"Galilei";"1564";"1642"\r\n\
 "Nikola";"Tesla";"1856";"1943"\r\n\
 "Albert";"Einstein";"1879";"1955"';
