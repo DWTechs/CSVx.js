@@ -1,4 +1,4 @@
-[![License: MIT](https://img.shields.io/npm/l/@dwtechs/csvxjs.svg?color=brightgreen)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/npm/l/@dwtechs/csvx.svg?color=brightgreen)](https://opensource.org/licenses/MIT)
 [![npm version](https://badge.fury.io/js/%40dwtechs%2Fcsvx.svg)](https://www.npmjs.com/package/@dwtechs/csvx)
 [![last version release date](https://img.shields.io/github/release-date/DWTechs/CSVx.js)](https://www.npmjs.com/package/@dwtechs/csvx)
 ![Jest:coverage](https://img.shields.io/badge/Jest:coverage-100%25-brightgreen.svg)
@@ -18,13 +18,13 @@ The main purpose of this library is to provide an easy way to export your data a
 ### npm
 
 ```bash
-$ npm i @dwtechs/csvxjs
+$ npm i @dwtechs/csvx
 ```
 
 ### yarn
 
 ```bash
-$ yarn add @dwtechs/csvxjs
+$ yarn add @dwtechs/csvx
 ```
 
 ## Usage
@@ -37,7 +37,7 @@ $ yarn add @dwtechs/csvxjs
 ```
 
 ```javascript
-import { Export, Convert } from '@dwtechs/csvxjs';
+import { Export, Convert } from '@dwtechs/csvx';
 
 // Convert an array to CSV file
 let array = [
@@ -85,7 +85,7 @@ document.getElementById("table").innerHTML = Convert.table(data,{separator: ';'}
 ### IIFE
 
 ```html
-<script src="node-modules/@dwtechs/csvxjs/dist/csvx.iife.min.js"></script>
+<script src="node-modules/@dwtechs/csvx/dist/csvx.iife.min.js"></script>
 <button id="csv">Export CSV</button>
 <div id="table"></div>
 ```
