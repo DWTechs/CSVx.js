@@ -12,7 +12,7 @@ module.exports = function(grunt){
   const host      = 'localhost';
 
   const srcDir          = 'src/';
-  const compiledSrcDir  = srcDir + 'ts/build/';
+  const compiledSrcDir  = srcDir + 'build/';
   const compiledES6Dir  = compiledSrcDir + 'es6/';
   const distDir         = 'dist/';
   const webDir          = 'web/';
@@ -53,19 +53,6 @@ module.exports = function(grunt){
         src: [  distDir + '*',
                 compiledES6Dir + '*'
               ]
-      },
-      websass:{
-        src: [  webDir + 'sass/build/*',
-                publicDir + 'css/*'
-        ]
-      },
-      webjs:{
-        src: [  publicDir + 'js/*'
-        ]
-      },
-      webmisc: {
-        src: [  publicDir + 'fonts/*'
-        ]
       }
     },
     // jshint: {
@@ -74,21 +61,6 @@ module.exports = function(grunt){
     //   },
     //   web: [ webDir + 'js/**/*.js']
     // },
-    sass: {
-      options: {
-        implementation: sass,
-        sourceMap: true
-      },
-      dist: {
-        files: [{
-          expand: true,
-          cwd: webDir + 'sass/',
-          src: ['*.scss'],
-          dest: webDir + 'sass/build/',
-          ext: '.css'
-        }]
-      }
-    },
     uglify: {
       libIife: {
         options: {
@@ -119,42 +91,6 @@ module.exports = function(grunt){
         },
         src: distDir + projectNameLC + '.iife.js',
         dest: distDir + projectNameLC + '.iife.min.js'
-      },
-      web: {
-        options: {
-          sourceMap: false,
-          sourceMapName: srcDir + 'sourcemap.map',
-          banner: '',
-          mangle: {
-            reserved: ['jQuery']
-          },
-          compress: {
-            sequences: true,
-            properties: true,
-            dead_code: true,
-            unsafe: false,
-            conditionals:true,
-            comparisons:true,
-            booleans:true,
-            loops:true,
-            unused: true,
-            hoist_funs:true,
-            if_return:true,
-            join_vars:true,
-            warnings: true,
-            drop_console: false,
-            keep_fargs: false,
-            keep_fnames: false
-          }
-        },
-        files: [{
-          src  : [
-            nodeDir + 'jquery-easing/jquery.easing.1.3.js',
-            //distDir + projectNameLC + '.iife.js',
-            webDir + 'js/*.js'
-          ],
-          dest : publicDir + 'js/main.min.js'
-        }]
       }
     },
     concat:{
@@ -166,32 +102,6 @@ module.exports = function(grunt){
         },
         src: compiledES6Dir + '*.d.ts',
         dest: distDir + projectNameLC + '.d.ts'
-      },
-      webjs: {
-        options: {
-          separator: '',
-          stripBanners: true,
-          banner: ''
-        },
-        src: [nodeDir   + 'jquery/dist/jquery.min.js',
-              nodeDir   + '@fortawesome/fontawesome-free/js/all.min.js',
-              nodeDir   + 'bootstrap/dist/js/bootstrap.min.js',
-              nodeDir   + '@lcluber/weejs/dist/wee.iife.min.js',
-              publicDir + 'js/main.min.js'
-            ],
-        dest: publicDir + 'js/main.min.js'
-      },
-      webcss: {
-        options: {
-          separator: '',
-          stripBanners: true,
-          banner: ''
-        },
-        src: [// nodeDir   + 'font-awesome/css/font-awesome.min.css',
-              nodeDir   + 'bootstrap/dist/css/bootstrap.min.css',
-              publicDir + 'css/style.min.css'
-            ],
-        dest: publicDir + 'css/style.min.css'
       }
     },
     strip_code: {
@@ -206,45 +116,6 @@ module.exports = function(grunt){
       declaration: {
         src: distDir + projectName + '.d.ts'
       }
-    },
-    copy: {
-      fonts:{
-        expand: true,
-        cwd: nodeDir + 'bootstrap/dist/',
-        src: ['fonts/**/*'],
-        dest: publicDir,
-        filter: 'isFile'
-      },
-      css:{
-        expand: true,
-        cwd: webDir  + 'sass/build/',
-        src: ['*'],
-        dest: publicDir + 'css/',
-        filter: 'isFile'
-      }
-    },
-    nodemon: {
-      dev: {
-        script: 'bin/www',
-        options: {
-          //nodeArgs: ['--debug'],
-          delay:1000,
-          watch: ['web/routes', 'web/app.js'],
-          ext: 'js,scss'
-        }
-      }
-    },
-    open: {
-      all: {
-        path: 'http://' + host + ':' + port
-      }
-    },
-    // run watch and nodemon at the same time
-    concurrent: {
-      options: {
-        logConcurrentOutput: true
-      },
-      tasks: ['nodemon' ]
     }
   });
 
@@ -253,9 +124,6 @@ module.exports = function(grunt){
   grunt.loadNpmTasks( 'grunt-contrib-uglify' );
   grunt.loadNpmTasks( 'grunt-contrib-concat' );
   grunt.loadNpmTasks( 'grunt-strip-code' );
-  grunt.loadNpmTasks( 'grunt-concurrent' );
-  grunt.loadNpmTasks( 'grunt-nodemon' );
-  grunt.loadNpmTasks( 'grunt-sass' );
 
 
   grunt.registerTask( 'ugly',
@@ -269,46 +137,6 @@ module.exports = function(grunt){
                       [ 'concat:declaration',
                         'strip_code:declaration'
                       ]
-                    );
-
-  grunt.registerTask( 'serve',
-                      'launch server, open website and watch for changes',
-                      [ 'concurrent' ]
-                    );
-
-  grunt.registerTask( 'websass',
-                      'Compile website css',
-                      [ 'clean:websass',
-                        'sass',
-                        // 'cssmin',
-                        'copy:css',
-                        'concat:webcss'
-                       ]
-                    );
-
-  grunt.registerTask( 'webjs',
-                      'Compile website js',
-                      [ //'jshint:web',
-                        'clean:webjs',
-                        'uglify:web',
-                        'concat:webjs'
-                       ]
-                    );
-
-  grunt.registerTask( 'webmisc',
-                      'Compile website misc',
-                      [ 'clean:webmisc',
-                        'copy:fonts'
-                       ]
-                    );
-
-  grunt.registerTask( 'website',
-                      'build the website in the website/ folder',
-                      function() {
-                        grunt.task.run('webjs');
-                        grunt.task.run('websass');
-                        grunt.task.run('webmisc');
-                      }
                     );
 
 };

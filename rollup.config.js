@@ -15,10 +15,10 @@ const onAnalysis = ({ bundleSize }) => {
 };
 
 module.exports = {
-  input: "src/ts/build/es6/csvx.js",
+  input: "src/build/es6/csvx.js",
   output: {
     name: "CSVx",
-    file: "src/ts/build/csvx.iife.js",
+    file: "src/build/csvx.iife.js",
     format: "iife"
   },
   external: [], // <-- suppresses the warning

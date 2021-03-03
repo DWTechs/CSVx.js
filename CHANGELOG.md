@@ -1,3 +1,7 @@
+Version 0.2.5 (March 03rd 2021)
+-----------------------------
+- improved typings for table conversion method
+
 Version 0.2.4 (February 22th 2021)
 -----------------------------
 - Simplified data typing for TypeScript

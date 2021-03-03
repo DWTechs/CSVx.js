@@ -30,7 +30,7 @@ export declare class Convert {
     static setOptions(options: Partial<Options>): void;
     static setCSS(css: Partial<CSS>): void;
     static array(data: string, options?: Partial<Options>, css?: Partial<CSS>): Array<Array<string>> | false;
-    static table(data: string, options?: Options, css?: CSS): string | false;
+    static table(data: string, options?: Partial<Options>, css?: Partial<CSS>): string | false;
     private static createTr;
     private static setObject;
 }

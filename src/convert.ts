@@ -56,7 +56,7 @@ export class Convert {
     return array;
   }
 
-  public static table( data: string, options?: Options, css?: CSS): string|false {
+  public static table( data: string, options?: Partial<Options>, css?: Partial<CSS>): string|false {
 
     let array = this.array( data, options, css);
     if (array) {

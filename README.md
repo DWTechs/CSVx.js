@@ -190,7 +190,7 @@ class Convert {
   // convert CSV to Javascript array
   static array(data: string, options?: Partial<Options>, css?: Partial<CSS>): Array<Array<string>> | false;
   // convert CSV to HTML table
-  static table(data: string, options?: Options, css?: CSS): string | false;
+  static table(data: string, options?: Partial<Options>, css?: Partial<CSS>): string | false;
 }
 
 class Export {

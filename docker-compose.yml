@@ -1,0 +1,9 @@
+version: "3.8"
+services:
+
+  csvx:
+    build: ./
+    container_name: csvx
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
