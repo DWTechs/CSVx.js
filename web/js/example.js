@@ -20,6 +20,7 @@ var array = [
     died:1955
   }
 ];
+
 var customLabels = {
   firstname: 'First name',
   lastname: 'Last name', 
@@ -27,7 +28,7 @@ var customLabels = {
   born: 'Born',
   died: 'Died'
 };
-var exportButton = Wee.Dom.findById('csv');
+var exportButton = document.getElementById('csv');
 exportButton.addEventListener('click', function() {
   CSVx.Export.data('scientists',array, {separator:';', customLabels: customLabels });
 });

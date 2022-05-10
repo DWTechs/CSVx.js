@@ -1,8 +1,5 @@
 module.exports = function(grunt){
   const path = require('path');
-  const sass = require('node-sass');
-
-  require('time-grunt')(grunt);
 
 
   const projectName = 'CSVx';
@@ -120,7 +117,6 @@ module.exports = function(grunt){
   });
 
   grunt.loadNpmTasks( 'grunt-contrib-clean' );
-  grunt.loadNpmTasks( 'grunt-contrib-copy' );
   grunt.loadNpmTasks( 'grunt-contrib-uglify' );
   grunt.loadNpmTasks( 'grunt-contrib-concat' );
   grunt.loadNpmTasks( 'grunt-strip-code' );

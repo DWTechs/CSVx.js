@@ -11,14 +11,15 @@ export class Export {
     labels: true,
     quote: '"',
     separator: ',',
-    CRLF : '\r\n',
-    customLabels: null
+    CRLF: '\r\n',
+    customLabels: null,
+    save: false,
   }
 
-  public static data( filename: string,
+  public static async data( filename: string,
                       data: { [key: string]: number|string }[],
                       options?: Partial<Options>
-                    ): boolean {
+                    ): Promise<boolean> {
     
     // check data consistency
     for (let row of data) {                    
@@ -45,7 +46,11 @@ export class Export {
     }
     table += this.createTable(data);
     // console.log('table', table);
-    this.download(table, filename);
+    if(this.options.save){
+      await this.save(table, filename);
+    } else {
+      this.download(table, filename);
+    }
     return true;
   }
 
@@ -59,9 +64,9 @@ export class Export {
 
   private static download(table:string, filename: string): void {
     let encodedTable = `data:${this.options.data};charset=${this.options.charset},${escape(table)}`;
-    if(window.navigator.msSaveOrOpenBlob) {
+    if((window as any).navigator.msSaveOrOpenBlob) {
       // IE11
-      window.navigator.msSaveOrOpenBlob(encodedTable, filename);
+      (window as any).navigator.msSaveOrOpenBlob(encodedTable, filename);
     } else {
       let link = document.createElement('a');
       link.setAttribute('href', encodedTable);
@@ -71,6 +76,16 @@ export class Export {
       document.body.removeChild(link);
     }
   }
+
+  private static async save(table: string, filename: string ): Promise<void> {
+    let encodedTable = `data:${this.options.data};charset=${this.options.charset},${escape(table)}`;
+    const fileHandle = await (window as any).showSaveFilePicker({
+      suggestedName: filename+'.csv'
+    });
+    const fileStream = await fileHandle.createWritable();
+    await fileStream.write(new Blob([encodedTable], { type: 'text/csv' }));
+    await fileStream.close();
+  };
 
   private static createTable( data: { [key: string]: number|string }[] ): string {
     let table: string = '';

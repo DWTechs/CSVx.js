@@ -19,6 +19,8 @@ module.exports = api => {
         [
           "@babel/env",
           {
+            useBuiltIns: "usage", // alternative mode: "entry"
+            corejs: 3, // default would be 2
             debug: true,
             targets: {
               ie: 11,

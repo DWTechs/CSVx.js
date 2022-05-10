@@ -41,9 +41,10 @@ export declare class Export {
     static options: Options;
     static data(filename: string, data: {
         [key: string]: number | string;
-    }[], options?: Partial<Options>): boolean;
+    }[], options?: Partial<Options>): Promise<boolean>;
     static setOptions(options: Partial<Options>): void;
     private static download;
+    private static save;
     private static createTable;
     private static createLabels;
     private static createCustomLabels;
@@ -61,6 +62,7 @@ export interface Options {
     customLabels: {
         [key: string]: string;
     } | null;
+    save: boolean;
     [key: string]: string[] | String | boolean | {
         [key: string]: string;
     } | null;

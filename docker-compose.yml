@@ -4,6 +4,8 @@ services:
   csvx:
     build: ./
     container_name: csvx
+    ports:
+      - "8080:8080"
     volumes:
       - ./:/usr/src/app
       - /usr/src/app/node_modules

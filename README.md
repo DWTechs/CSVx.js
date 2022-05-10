@@ -207,6 +207,7 @@ interface Options {
   separator?: string; // default : ','
   CRLF?: string; // default : '\r\n'
   customLabels: { [key: string]: string }; // default : {}
+  save: boolean; //**
 }
 
 interface CSS {
@@ -215,6 +216,9 @@ interface CSS {
 }
 
 ```
+
+** With the "save" option to true the user will be prompted to select where to save the file. 
+Please note this option will only work on a https website or on Chrome browser.
 
 ## Contributors
 

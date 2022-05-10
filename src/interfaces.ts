@@ -7,6 +7,7 @@ export interface Options {
   separator: string;
   CRLF: string;
   customLabels: { [key: string]: string }|null;
+  save: boolean;
   [key: string]: string[]|String|boolean|{ [key: string]: string }|null;
 }
 

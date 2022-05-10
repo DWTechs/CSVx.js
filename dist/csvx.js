@@ -25,33 +25,49 @@
  */
 import { isObject } from '@dwtechs/checkhard';
 
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 class Export {
     static data(filename, data, options) {
-        for (let row of data) {
-            if (!isObject(row)) {
-                return false;
+        return __awaiter(this, void 0, void 0, function* () {
+            for (let row of data) {
+                if (!isObject(row)) {
+                    return false;
+                }
             }
-        }
-        if (!filename) {
-            filename = 'export';
-        }
-        if (options) {
-            this.setOptions(options);
-        }
-        let table = '';
-        let labels = [];
-        if (!this.options.customLabels) {
-            labels = this.createLabels(data);
-        }
-        else {
-            labels = this.createCustomLabels(this.options.customLabels);
-        }
-        if (this.options.labels) {
-            table += this.createLabelsRow(labels);
-        }
-        table += this.createTable(data);
-        this.download(table, filename);
-        return true;
+            if (!filename) {
+                filename = 'export';
+            }
+            if (options) {
+                this.setOptions(options);
+            }
+            let table = '';
+            let labels = [];
+            if (!this.options.customLabels) {
+                labels = this.createLabels(data);
+            }
+            else {
+                labels = this.createCustomLabels(this.options.customLabels);
+            }
+            if (this.options.labels) {
+                table += this.createLabelsRow(labels);
+            }
+            table += this.createTable(data);
+            if (this.options.save) {
+                yield this.save(table, filename);
+            }
+            else {
+                this.download(table, filename);
+            }
+            return true;
+        });
     }
     static setOptions(options) {
         for (const property in options) {
@@ -74,6 +90,18 @@ class Export {
             document.body.removeChild(link);
         }
     }
+    static save(table, filename) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let encodedTable = `data:${this.options.data};charset=${this.options.charset},${escape(table)}`;
+            const fileHandle = yield window.showSaveFilePicker({
+                suggestedName: filename + '.csv'
+            });
+            const fileStream = yield fileHandle.createWritable();
+            yield fileStream.write(new Blob([encodedTable], { type: 'text/csv' }));
+            yield fileStream.close();
+        });
+    }
+    ;
     static createTable(data) {
         var _a;
         let table = '';
@@ -138,7 +166,8 @@ Export.options = {
     quote: '"',
     separator: ',',
     CRLF: '\r\n',
-    customLabels: null
+    customLabels: null,
+    save: false,
 };
 
 class Convert {

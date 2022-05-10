@@ -1,3 +1,7 @@
+Version 0.3.0 (May 10th 2022)
+-----------------------------
+- Added "save" option to get prompted on file save instead of a direct download
+
 Version 0.2.5 (March 03rd 2021)
 -----------------------------
 - improved typings for table conversion method
