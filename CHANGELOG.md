@@ -1,6 +1,10 @@
+Version 0.3.1 (May 11th 2022)
+-----------------------------
+- add native endings to the save method
+
 Version 0.3.0 (May 10th 2022)
 -----------------------------
-- Added "save" option to get prompted on file save instead of a direct download
+- Add "save" option to get prompted on file save instead of a direct download
 
 Version 0.2.5 (March 03rd 2021)
 -----------------------------

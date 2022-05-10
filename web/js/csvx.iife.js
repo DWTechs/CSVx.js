@@ -916,7 +916,7 @@ var CSVx = (function (exports) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                encodedTable = "data:" + this.options.data + ";charset=" + this.options.charset + "," + escape(table);
+                encodedTable = table;
                 _context2.next = 3;
                 return window.showSaveFilePicker({
                   suggestedName: filename + '.csv'
@@ -931,7 +931,8 @@ var CSVx = (function (exports) {
                 fileStream = _context2.sent;
                 _context2.next = 9;
                 return fileStream.write(new Blob([encodedTable], {
-                  type: 'text/csv'
+                  type: this.options.data + ";charset=" + this.options.charset,
+                  endings: 'native'
                 }));
 
               case 9:

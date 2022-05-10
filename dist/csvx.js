@@ -92,12 +92,12 @@ class Export {
     }
     static save(table, filename) {
         return __awaiter(this, void 0, void 0, function* () {
-            let encodedTable = `data:${this.options.data};charset=${this.options.charset},${escape(table)}`;
+            let encodedTable = table;
             const fileHandle = yield window.showSaveFilePicker({
                 suggestedName: filename + '.csv'
             });
             const fileStream = yield fileHandle.createWritable();
-            yield fileStream.write(new Blob([encodedTable], { type: 'text/csv' }));
+            yield fileStream.write(new Blob([encodedTable], { type: `${this.options.data};charset=${this.options.charset}`, endings: 'native' }));
             yield fileStream.close();
         });
     }

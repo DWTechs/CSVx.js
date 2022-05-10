@@ -78,12 +78,12 @@ export class Export {
   }
 
   private static async save(table: string, filename: string ): Promise<void> {
-    let encodedTable = `data:${this.options.data};charset=${this.options.charset},${escape(table)}`;
+    let encodedTable = table;
     const fileHandle = await (window as any).showSaveFilePicker({
       suggestedName: filename+'.csv'
     });
     const fileStream = await fileHandle.createWritable();
-    await fileStream.write(new Blob([encodedTable], { type: 'text/csv' }));
+    await fileStream.write(new Blob([encodedTable], { type: `${this.options.data};charset=${this.options.charset}`, endings:'native' }));
     await fileStream.close();
   };
 

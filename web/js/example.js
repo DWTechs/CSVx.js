@@ -30,7 +30,7 @@ var customLabels = {
 };
 var exportButton = document.getElementById('csv');
 exportButton.addEventListener('click', function() {
-  CSVx.Export.data('scientists',array, {separator:';', customLabels: customLabels });
+  CSVx.Export.data('scientists',array, {separator:';', customLabels: customLabels, save: true });
 });
 
 var data = '"Firstname";"Lastname";"Born";"Died"\r\n\
