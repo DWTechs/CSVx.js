@@ -1,7 +1,7 @@
 Version 0.4.0 (November 8th 2026)
 -----------------------------
- * Update to `@dwtechs/checkard` (`3.7.0`)
- * Migrate package to ESM-only (`"type": "module"`, Node.js `>=22`) and modernize Rollup/TypeScript/Jest build pipeline
+* Update `@dwtechs/checkard` to version 3.7.0
+* Migrate package to ESM-only (`"type": "module"`, Node.js `>=22`) and modernize Rollup/TypeScript/Jest build pipeline
  * Refactor `Export` and `Convert` from static classes to plain exported module objects
  * Fix `Export.setOptions` and `Convert.setOptions` ignoring falsy option values (`labels: false`, `quote: ''`)
  * Fix static option and auto-generated `customLabels` mutation leaking across subsequent `Export.data` and `Convert` calls
