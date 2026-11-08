@@ -1,22 +1,33 @@
+Version 0.4.0 (November 8th 2026)
+-----------------------------
+ * Update to `@dwtechs/checkard` (`3.7.0`)
+ * Migrate package to ESM-only (`"type": "module"`, Node.js `>=22`) and modernize Rollup/TypeScript/Jest build pipeline
+ * Refactor `Export` and `Convert` from static classes to TypeScript namespaces
+ * Fix `Export.setOptions` and `Convert.setOptions` ignoring falsy option values (`labels: false`, `quote: ''`)
+ * Fix static option and auto-generated `customLabels` mutation leaking across subsequent `Export.data` and `Convert` calls
+ * Replace deprecated `escape()` in `Export.download` with `Blob` + `URL.createObjectURL` (and `encodeURIComponent` fallback) for proper UTF-8 support
+ * Escape embedded quotes in CSV fields and support multi-character or empty separators
+ * Add input validation on `Export.data` and `Convert.array`, HTML entity escaping in `Convert.table`, and graceful fallback/cancellation handling in `Export.save`
+
 Version 0.3.1 (May 11th 2022)
 -----------------------------
-- add native endings to the save method
+ * add native endings to the save method
 
 Version 0.3.0 (May 10th 2022)
 -----------------------------
-- Add "save" option to get prompted on file save instead of a direct download
+ * Add "save" option to get prompted on file save instead of a direct download
 
 Version 0.2.5 (March 03rd 2021)
 -----------------------------
-- improved typings for table conversion method
+ * improved typings for table conversion method
 
 Version 0.2.4 (February 22th 2021)
 -----------------------------
-- Simplified data typing for TypeScript
+ * Simplified data typing for TypeScript
 
 Version 0.2.3 (February 18th 2021)
 -----------------------------
-- Project transferred from LCluber to DWTechs account
+ * Project transferred from LCluber to DWTechs account
 
 Version 0.2.2 (February 17th 2021)
 -----------------------------

@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "module": "ES6",
-    "moduleResolution": "node",
-    "target": "ES6",
-    "sourceMap": true,
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "target": "ES2022",
+    "lib": ["dom", "ES2022"],
+    "sourceMap": false,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
@@ -12,16 +13,16 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
     "preserveConstEnums": true,
-    "suppressImplicitAnyIndexErrors":false,
     "allowJs": false,
     "removeComments": true,
-    "declaration":true,
-    "declarationDir":"src/build/es6/",
-    "outDir":"src/build/es6/",
-    "rootDir":"src/"
+    "declaration": true,
+    "outDir": "build/es6/",
+    "rootDir": "src/"
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }

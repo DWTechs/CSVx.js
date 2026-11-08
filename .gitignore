@@ -1,9 +1,10 @@
 
 node_modules/
-web/sass/build/
-web/js/build/
-src/build/
-src/ts/build/
-.sass-cache/
+build/
+dist/
 .tscache/
 npm-debug.log
+tests/coverage/
+.size-snapshot.json
+.npmrc
+.DS_Store

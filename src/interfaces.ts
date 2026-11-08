@@ -1,4 +1,3 @@
-
 export interface Options {
   data: string;
   charset: string;
@@ -6,13 +5,13 @@ export interface Options {
   quote: string;
   separator: string;
   CRLF: string;
-  customLabels: { [key: string]: string }|null;
+  customLabels: { [key: string]: string } | null;
   save: boolean;
-  [key: string]: string[]|String|boolean|{ [key: string]: string }|null;
+  [key: string]: string[] | string | boolean | { [key: string]: string } | null;
 }
 
 export interface CSS {
   table: string;
   th: string;
-  [key: string]: String;
+  [key: string]: string;
 }

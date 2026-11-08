@@ -1,54 +1,60 @@
-import { Options, CSS }  from './interfaces';
+import type { Options, CSS } from './interfaces';
+import { isObject, isString } from '@dwtechs/checkard';
 
-export type CellTypes = 'td'|'th';
+export type CellTypes = 'td' | 'th';
 
-export class Convert {
+export namespace Convert {
 
-  // static html: string = null;
   // default option values
-  static options: Partial<Options> = {
-    // data: 'text/csv',
-    // charset: 'utf-8',
+  export let options: Partial<Options> = {
     labels: true,
     quote: '"',
     separator: ',',
-    CRLF : '\r\n'
-  }
+    CRLF: '\r\n',
+  };
 
-  static css: CSS = {
+  export let css: CSS = {
     table: '',
-    th: ''
+    th: '',
+  };
+
+  export function setOptions(newOptions: Partial<Options>): void {
+    setObject('options', newOptions);
   }
 
-  public static setOptions(options: Partial<Options>): void {
-    this.setObject('options', options);
+  export function setCSS(newCSS: Partial<CSS>): void {
+    setObject('css', newCSS);
   }
 
-  public static setCSS(css: Partial<CSS>): void {
-    this.setObject('css', css);
-  }
-
-  public static array( data: string, options?: Partial<Options>, css?: Partial<CSS>): Array<Array<string>>|false  {
-    if (options) {
-      this.setOptions(options);
+  export function array(
+    data: string,
+    options?: Partial<Options>
+  ): Array<Array<string>> | false {
+    if (!isString(data, '!0')) {
+      return false;
     }
 
-    if (css) {
-      this.setCSS(css);
-    }
+    const opts = resolveObject(Convert.options, options);
+    const crlf = opts.CRLF as string;
+    const separator = opts.separator as string;
+    const quote = opts.quote as string;
 
-    let rows:Array<string> = data.trim().split(<string>this.options.CRLF).filter(Boolean);
+    const rows: Array<string> = data.trim().split(crlf).filter(Boolean);
     if (!rows.length) {
       return false;
     }
 
-    let array:Array<Array<string>> = [];
+    const array: Array<Array<string>> = [];
 
-    for (let row of rows) {
-      let cells:Array<string> = row.split(<string>this.options.separator);
-      if (this.options.quote) {
-        for (let i = 0 ; i < cells.length ; i++ ) {
-          cells[i] = cells[i].slice(1,-1);
+    for (const row of rows) {
+      const cells: Array<string> = row.split(separator);
+      if (quote) {
+        const qLen = quote.length;
+        for (let i = 0; i < cells.length; i++) {
+          const cell = cells[i];
+          if (cell.length >= qLen * 2 && cell.startsWith(quote) && cell.endsWith(quote)) {
+            cells[i] = cell.slice(qLen, -qLen).split(quote + quote).join(quote);
+          }
         }
       }
       array.push(cells);
@@ -56,42 +62,87 @@ export class Convert {
     return array;
   }
 
-  public static table( data: string, options?: Partial<Options>, css?: Partial<CSS>): string|false {
+  export function table(
+    data: string,
+    options?: Partial<Options>,
+    css?: Partial<CSS>
+  ): string | false {
+    const opts = resolveObject(Convert.options, options);
+    const cssOpts = resolveObject(Convert.css, css);
 
-    let array = this.array( data, options, css);
-    if (array) {
-      let thead:string = '';
-      let table: Array<string> = [];
-      for(let i = 0 ; i < array.length ; i++) {
+    const rows = Convert.array(data, opts);
+    if (rows) {
+      let thead = '';
+      const table: Array<string> = [];
+      for (let i = 0; i < rows.length; i++) {
         let cellType: CellTypes = 'td';
         let style = '';
-        if (!i && this.options.labels) {
+        if (!i && opts.labels) {
           cellType = 'th';
-          if (this.css.th) {
-            style = ' class = "' + this.css.th + '"';
+          if (cssOpts.th) {
+            style = ` class="${escapeHtml(cssOpts.th)}"`;
           }
-          thead = '<thead>' + this.createTr(array[i], cellType, style) + '</thead>';
+          thead = `<thead>${createTr(rows[i], cellType, style)}</thead>`;
         } else {
-          table.push(this.createTr(array[i], cellType, ''));
+          table.push(createTr(rows[i], cellType, ''));
         }
       }
 
-      if(thead || table.length) {
-        let style = this.css.table ? 'class="'+ this.css.table + '"' : '';
-        return '<table ' + style +'>' + thead + '<tbody>' + table.join('') + '</tbody></table>';
-      }
+      const style = cssOpts.table ? ` class="${escapeHtml(cssOpts.table)}"` : '';
+      return `<table${style}>${thead}<tbody>${table.join('')}</tbody></table>`;
     }
     return false;
   }
 
-  private static createTr(row: Array<string>, cellType: CellTypes, style: string): string {
-    return '<tr><' + cellType + style + '>' + row.join('</' + cellType + '><' + cellType + style + '>') + '</' + cellType + '></tr>';
+  function createTr(row: Array<string>, cellType: CellTypes, style: string): string {
+    const escapedCells = row.map(cell => escapeHtml(cell));
+    return (
+      `<tr><${cellType}${style}>` +
+      escapedCells.join(`</${cellType}><${cellType}${style}>`) +
+      `</${cellType}></tr>`
+    );
   }
 
-  private static setObject(parameterName: 'options'|'css', newObject: Partial<Options|CSS>): void {
-    for (const property in newObject) {
-      if (newObject.hasOwnProperty(property) && this[parameterName].hasOwnProperty(property)) {
-        this[parameterName][property] = newObject[property];
+  function escapeHtml(str: string): string {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function resolveObject<T extends Record<string, any>>(
+    base: T,
+    overrides?: Partial<T>
+  ): T {
+    const resolved = { ...base };
+    if (isObject(overrides)) {
+      for (const property of Object.keys(overrides)) {
+        if (
+          Object.prototype.hasOwnProperty.call(resolved, property) &&
+          overrides[property] !== undefined
+        ) {
+          (resolved as Record<string, unknown>)[property] = overrides[property];
+        }
+      }
+    }
+    return resolved;
+  }
+
+  function setObject(
+    parameterName: 'options' | 'css',
+    newObject: Partial<Options | CSS>
+  ): void {
+    if (!isObject(newObject)) {
+      return;
+    }
+    for (const property of Object.keys(newObject)) {
+      if (
+        Object.prototype.hasOwnProperty.call(Convert[parameterName], property) &&
+        newObject[property] !== undefined
+      ) {
+        Convert[parameterName][property] = newObject[property] as any;
       }
     }
   }

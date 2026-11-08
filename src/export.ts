@@ -1,11 +1,10 @@
-import { Options } from './interfaces';
-import { isObject } from '@dwtechs/checkhard';
+import type { Options } from './interfaces';
+import { isArray, isObject, isString } from '@dwtechs/checkard';
 
-export class Export {
+export namespace Export {
 
-  // static log = Logger.addGroup('CSVx Exporter');
   // default option values
-  static options: Options = {
+  export let options: Options = {
     data: 'text/csv',
     charset: 'utf-8',
     labels: true,
@@ -14,141 +13,194 @@ export class Export {
     CRLF: '\r\n',
     customLabels: null,
     save: false,
-  }
+  };
 
-  public static async data( filename: string,
-                      data: { [key: string]: number|string }[],
-                      options?: Partial<Options>
-                    ): Promise<boolean> {
-    
+  export async function data(
+    filename: string,
+    data: { [key: string]: number | string }[],
+    options?: Partial<Options>
+  ): Promise<boolean> {
+    if (!isArray(data, '>', 0)) {
+      return false;
+    }
+
     // check data consistency
-    for (let row of data) {                    
+    for (const row of data) {
       if (!isObject(row)) {
         return false;
       }
     }
 
-    if (!filename) {
-      filename = 'export';
-    }
-    if (options) {
-      this.setOptions(options);
-    }
-    let table: string = '';
+    const name = isString(filename, '!0') ? filename : 'export';
+    const opts = resolveOptions(options);
+
+    let table = '';
     let labels: string[] = [];
-    if (!this.options.customLabels) {
-      labels = this.createLabels(data);
+    let labelMap: { [key: string]: string };
+
+    if (!opts.customLabels) {
+      const generated = createLabels(data);
+      labels = generated.labels;
+      labelMap = generated.labelMap;
     } else {
-      labels = this.createCustomLabels(this.options.customLabels);
+      labelMap = opts.customLabels;
+      labels = createCustomLabels(labelMap);
     }
-    if(this.options.labels) {
-      table += this.createLabelsRow(labels);
+
+    if (opts.labels) {
+      table += createLabelsRow(labels, opts);
     }
-    table += this.createTable(data);
-    // console.log('table', table);
-    if(this.options.save){
-      await this.save(table, filename);
-    } else {
-      this.download(table, filename);
+    table += createTable(data, labelMap, opts);
+
+    if (opts.save) {
+      return await save(table, name, opts);
     }
+    download(table, name, opts);
     return true;
   }
 
-  public static setOptions(options: Partial<Options>): void {
-    for(const property in options) {
-      if (options.hasOwnProperty(property) && this.options.hasOwnProperty(property)) {
-        this.options[property] = options[property]||this.options[property];
+  export function setOptions(newOptions: Partial<Options>): void {
+    if (!isObject(newOptions)) {
+      return;
+    }
+    for (const property of Object.keys(newOptions)) {
+      if (
+        Object.prototype.hasOwnProperty.call(Export.options, property) &&
+        newOptions[property] !== undefined
+      ) {
+        Export.options[property] = newOptions[property] as Options[keyof Options];
       }
     }
   }
 
-  private static download(table:string, filename: string): void {
-    let encodedTable = `data:${this.options.data};charset=${this.options.charset},${escape(table)}`;
-    if((window as any).navigator.msSaveOrOpenBlob) {
-      // IE11
-      (window as any).navigator.msSaveOrOpenBlob(encodedTable, filename);
-    } else {
-      let link = document.createElement('a');
-      link.setAttribute('href', encodedTable);
-      link.setAttribute('download', filename+'.csv');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  }
-
-  private static async save(table: string, filename: string ): Promise<void> {
-    let encodedTable = table;
-    const fileHandle = await (window as any).showSaveFilePicker({
-      suggestedName: filename+'.csv'
-    });
-    const fileStream = await fileHandle.createWritable();
-    await fileStream.write(new Blob([encodedTable], { type: `${this.options.data};charset=${this.options.charset}`, endings:'native' }));
-    await fileStream.close();
-  };
-
-  private static createTable( data: { [key: string]: number|string }[] ): string {
-    let table: string = '';
-    for (let row of data) {
-      let parsedRow: string = '';
-      for (let property in this.options.customLabels) {
-        if (this.options.customLabels.hasOwnProperty(property)) {
-          parsedRow += this.createField((row[property] as string|number) ?? '');
+  function resolveOptions(options?: Partial<Options>): Options {
+    const resolved: Options = {
+      ...Export.options,
+      customLabels: Export.options.customLabels ? { ...Export.options.customLabels } : null,
+    };
+    if (isObject(options)) {
+      for (const property of Object.keys(options)) {
+        if (
+          Object.prototype.hasOwnProperty.call(resolved, property) &&
+          options[property] !== undefined
+        ) {
+          resolved[property] = options[property] as Options[keyof Options];
         }
       }
-      table += this.createRow(parsedRow);
+    }
+    return resolved;
+  }
+
+  function download(table: string, filename: string, opts: Options): void {
+    const link = document.createElement('a');
+    let url: string;
+    let isObjectUrl = false;
+
+    if (
+      typeof Blob !== 'undefined' &&
+      typeof URL !== 'undefined' &&
+      typeof URL.createObjectURL === 'function'
+    ) {
+      const blob = new Blob([table], { type: `${opts.data};charset=${opts.charset}` });
+      url = URL.createObjectURL(blob);
+      isObjectUrl = true;
+    } else {
+      url = `data:${opts.data};charset=${opts.charset},${encodeURIComponent(table)}`;
+    }
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${filename}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    if (isObjectUrl && typeof URL.revokeObjectURL === 'function') {
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  async function save(table: string, filename: string, opts: Options): Promise<boolean> {
+    if (typeof window === 'undefined' || typeof (window as any).showSaveFilePicker !== 'function') {
+      download(table, filename, opts);
+      return true;
+    }
+    try {
+      const fileHandle = await (window as any).showSaveFilePicker({
+        suggestedName: `${filename}.csv`,
+      });
+      const fileStream = await fileHandle.createWritable();
+      await fileStream.write(
+        new Blob([table], {
+          type: `${opts.data};charset=${opts.charset}`,
+          endings: 'native',
+        })
+      );
+      await fileStream.close();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function createTable(
+    data: { [key: string]: number | string }[],
+    labelMap: { [key: string]: string },
+    opts: Options
+  ): string {
+    let table = '';
+    const keys = Object.keys(labelMap);
+    for (const row of data) {
+      let parsedRow = '';
+      for (const property of keys) {
+        parsedRow += createField((row[property] as string | number) ?? '', opts);
+      }
+      table += createRow(parsedRow, opts);
     }
     return table;
   }
 
-  private static createLabels (data: { [key: string]: number|string }[]): string[] {
-    let params: string[] = [];
-    for (let row of data) {
+  function createLabels(
+    data: { [key: string]: number | string }[]
+  ): { labels: string[]; labelMap: { [key: string]: string } } {
+    const params: string[] = [];
+    for (const row of data) {
       let i = 0;
-      for (let property in row) {
-        if (row.hasOwnProperty(property)) {
-          const newProperty = params.find(value => value === property);
-          if (!newProperty) {
-            params.splice(i, 0, property);
-          }
-          i++;
+      for (const property of Object.keys(row)) {
+        if (!params.includes(property)) {
+          params.splice(i, 0, property);
         }
+        i++;
       }
     }
-    this.options.customLabels = {};
-    for (let param of params) {
-      this.options.customLabels[param] = param;
+    const labelMap: { [key: string]: string } = {};
+    for (const param of params) {
+      labelMap[param] = param;
     }
-    return params;
+    return { labels: params, labelMap };
   }
 
-  private static createCustomLabels (customLabels: { [key: string]: string }): string[] {
-    let params: string[] = [];
-    for (let property in customLabels) {
-      if (customLabels.hasOwnProperty(property)) {
-        params.push(customLabels[property]);
-      }
+  function createCustomLabels(customLabels: { [key: string]: string }): string[] {
+    return Object.values(customLabels);
+  }
+
+  function createLabelsRow(labels: string[], opts: Options): string {
+    let parsedRow = '';
+    for (const label of labels) {
+      parsedRow += createField(label, opts);
     }
-    return params;
+    return createRow(parsedRow, opts);
   }
 
-  private static createLabelsRow(labels: string[]): string {
-    let parsedRow: string = '';
-    for(let label of labels) {
-      parsedRow += this.createField(label);
-    }
-    return this.createRow(parsedRow);
+  function createRow(row: string, opts: Options): string {
+    const sepLen = opts.separator.length;
+    return (sepLen > 0 ? row.slice(0, -sepLen) : row) + opts.CRLF;
   }
 
-  private static createRow(row: string): string {
-    // console.log(row.slice(0, -1) + this.options.CRLF);
-    // console.log('row', row);
-    return row.slice(0, -1) + this.options.CRLF;
-  }
-
-  private static createField(content:string|number): string {
-    // console.log('field', content);
-    return this.options.quote + content + this.options.quote + this.options.separator;
+  function createField(content: string | number, opts: Options): string {
+    const str = String(content);
+    const q = opts.quote;
+    const escaped = q ? str.split(q).join(q + q) : str;
+    return q + escaped + q + opts.separator;
   }
 
 }

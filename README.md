@@ -2,8 +2,6 @@
 [![npm version](https://badge.fury.io/js/%40dwtechs%2Fcsvx.svg)](https://www.npmjs.com/package/@dwtechs/csvx)
 [![last version release date](https://img.shields.io/github/release-date/DWTechs/CSVx.js)](https://www.npmjs.com/package/@dwtechs/csvx)
 ![Jest:coverage](https://img.shields.io/badge/Jest:coverage-100%25-brightgreen.svg)
-[![minified size](https://img.shields.io/bundlephobia/min/@dwtechs/csvx?color=brightgreen)](https://www.npmjs.com/package/@dwtechs/csvx)
-
 
 ## Synopsis
 
@@ -127,76 +125,26 @@ public exportCSV():void {
 }
 ```
 
-### IIFE
-
-```html
-<script src="node-modules/@dwtechs/csvx/dist/csvx.iife.min.js"></script>
-<button id="csv">Export CSV</button>
-<div id="table"></div>
-```
-
-```javascript
-
-// Convert an array to CSV file
-var array = [
- {
-    firstname:'Galileo',
-    lastname:'Galiléi',
-    born:1564,
-    died:1642
-  },
-  {
-    firstname:'Nikola',
-    lastname:'Tesla',
-    city:'Smiljan',
-    born:1856,
-    died:1943
-  },
-  {
-    firstname:'Albert',
-    born:1879,
-    lastname:'Einstein',
-    died:1955
-  }
-];
-var customLabels = {
-  firstname: 'First name',
-  lastname: 'Last name', 
-  city: 'City',
-  born: 'Born',
-  died: 'Died'
-};
-var exportButton = document.getElementById('csv');
-exportButton.addEventListener('click', function() {
-  CSVx.Export.data('scientists',array,{separator: ';', customLabels: customLabels});// ; separator for excel friendly imports
-});
-
-// Convert CSV data to HTML table
-var data = '"Firstname";"Lastname";"Born";"Died"\r\n\
-"Galileo";"Galilei";"1564";"1642"\r\n\
-"Nikola";"Tesla";"1856";"1943"\r\n\
-"Albert";"Einstein";"1879";"1955"';
-
-document.getElementById("table").innerHTML = CSVx.Convert.table(data,{separator: ';'}, {table: 'table table-striped'});
-```
-
 ## API Reference
 
-```javascript
+```typescript
 
-class Convert {
-  static setOptions(options: Partial<Options>): void;
-  static setCSS(css: Partial<CSS>): void;
+namespace Convert {
+  let options: Partial<Options>;
+  let css: CSS;
+  function setOptions(options: Partial<Options>): void;
+  function setCSS(css: Partial<CSS>): void;
   // convert CSV to Javascript array
-  static array(data: string, options?: Partial<Options>, css?: Partial<CSS>): Array<Array<string>> | false;
+  function array(data: string, options?: Partial<Options>): Array<Array<string>> | false;
   // convert CSV to HTML table
-  static table(data: string, options?: Partial<Options>, css?: Partial<CSS>): string | false;
+  function table(data: string, options?: Partial<Options>, css?: Partial<CSS>): string | false;
 }
 
-class Export {
+namespace Export {
+  let options: Options;
   // Export CSV file
-  static data(filename: string, data: { [key: string]: number|string }[], options?: Partial<Options>): boolean;
-  static setOptions(options: Partial<Options>): void;
+  function data(filename: string, data: { [key: string]: number|string }[], options?: Partial<Options>): Promise<boolean>;
+  function setOptions(options: Partial<Options>): void;
 }
 
 interface Options {
@@ -206,8 +154,8 @@ interface Options {
   quote?: string; // default : '"'
   separator?: string; // default : ','
   CRLF?: string; // default : '\r\n'
-  customLabels: { [key: string]: string }; // default : {}
-  save: boolean; //**
+  customLabels?: { [key: string]: string } | null; // default : null
+  save?: boolean; // default : false **
 }
 
 interface CSS {
@@ -223,28 +171,14 @@ Please note this option will only work on a https website or on Chrome browser.
 ## Contributors
 
 CSVx.js is still in early development and I would be glad to get all the help you can provide for this project.
-To contribute you can clone the project on **[GitHub](https://github.com/DWTechs/CSVx.js)** and See **NOTICE.md** for detailed installation walkthrough.
+To contribute you can clone the project on **[GitHub](https://github.com/DWTechs/CSVx.js)** and see **contributor.md** for detailed installation walkthrough.
 
-## License
+## Stack
 
-MIT License
-
-Copyright (c) 2018 Ludovic CLUBER
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+| Purpose         |                    Choice                    |                                                     Motivation |
+| :-------------- | :------------------------------------------: | -------------------------------------------------------------: |
+| repository      |        [Github](https://github.com/)         |     hosting for software development version control using Git |
+| package manager |     [npm](https://www.npmjs.com/get-npm)     |                                default node.js package manager |
+| language        | [TypeScript](https://www.typescriptlang.org) | static type checking along with the latest ECMAScript features |
+| module bundler  |      [Rollup](https://rollupjs.org)       |                        advanced module bundler for ES6 modules |
+| unit testing    |          [Jest](https://jestjs.io/)          |                  delightful testing with a focus on simplicity |

@@ -1,4 +1,4 @@
-FROM node:15.6.0-alpine3.12
+FROM node:22.9.0-alpine3.20
 # Create app directory
 WORKDIR /usr/src/app
 # Install app dependencies
@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 
-RUN npm i -no-progress --loglevel=error
+RUN npm i -no-progress --loglevel=error --ignore-scripts --no-fund
 # If you are building your code for production
 # RUN npm ci --only=production
 # Bundle app source
