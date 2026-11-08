@@ -18,7 +18,7 @@
     "skipLibCheck": true,
     "preserveConstEnums": true,
     "allowJs": false,
-    "removeComments": true,
+    "removeComments": false,
     "declaration": true,
     "outDir": "build/es6/",
     "rootDir": "src/"

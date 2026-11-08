@@ -7,7 +7,7 @@ const src = `${rel}build/`;
 const dest = `${rel}dist/`;
 const files = [
   {
-    src: `${rel}src/csvx.d.ts`,
+    src: `${src}csvx.d.ts`,
     dest: `${dest}csvx.d.ts`,
   },
   {

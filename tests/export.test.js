@@ -44,6 +44,7 @@ describe('Export', () => {
       CRLF: '\r\n',
       customLabels: null,
       save: false,
+      bom: false,
     };
 
     origCreateObjectURL = URL.createObjectURL;
@@ -179,11 +180,11 @@ describe('Export', () => {
 
     test('falls back to encodeURIComponent data URI when URL.createObjectURL is unavailable', async () => {
       URL.createObjectURL = undefined;
-      await Export.data('utf8', [{ name: 'Galiléi' }], { labels: false });
+      await Export.data('utf8', [{ name: 'Galiléi' }], { labels: false, bom: true });
 
       expect(clickedLinks).toHaveLength(1);
       expect(clickedLinks[0].href).toBe(
-        `data:text/csv;charset=utf-8,${encodeURIComponent('"Galiléi"\r\n')}`
+        `data:text/csv;charset=utf-8,${encodeURIComponent('\uFEFF"Galiléi"\r\n')}`
       );
     });
   });

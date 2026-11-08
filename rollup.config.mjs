@@ -1,3 +1,5 @@
+import dts from "rollup-plugin-dts";
+
 const config = {
   input: "build/es6/csvx.js",
   output: {
@@ -11,4 +13,13 @@ const config = {
   plugins: []
 };
 
-export default config;
+const dtsConfig = {
+  input: "build/es6/csvx.d.ts",
+  output: {
+    file: "build/csvx.d.ts",
+    format: "es"
+  },
+  plugins: [dts()]
+};
+
+export default [config, dtsConfig];

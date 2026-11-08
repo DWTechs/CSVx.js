@@ -11,13 +11,13 @@
   ### build image : 
   ```bash
   $ cd CSVx.js/
-  $ docker-compose up -d
+  $ docker compose up -d
   ```
   
   ### build lib : 
   ```bash
   $ cd CSVx.js/
-  $ docker-compose run csvx
+  $ docker compose run csvx
   ```
   
 OR
@@ -54,4 +54,3 @@ OR
 - dist/
 - src/
 - tests/
-

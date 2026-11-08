@@ -1,35 +1,104 @@
 import type { Options, CSS } from './interfaces';
 import { isObject, isString } from '@dwtechs/checkard';
 
+/** HTML table cell tag names. */
 export type CellTypes = 'td' | 'th';
 
-export namespace Convert {
+function escapeHtml(str: string): string {
+  return str
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
 
-  // default option values
-  export let options: Partial<Options> = {
+function createTr(row: string[], cellType: CellTypes, style: string): string {
+  const escapedCells = row.map(cell => escapeHtml(cell));
+  return (
+    `<tr><${cellType}${style}>` +
+    escapedCells.join(`</${cellType}><${cellType}${style}>`) +
+    `</${cellType}></tr>`
+  );
+}
+
+function resolveObject<T extends Record<string, unknown>>(
+  base: T,
+  overrides?: Partial<T>
+): T {
+  const resolved = { ...base };
+  if (isObject(overrides)) {
+    for (const property of Object.keys(overrides)) {
+      if (Object.hasOwn(resolved, property) && overrides[property] !== undefined) {
+        (resolved as Record<string, unknown>)[property] = overrides[property];
+      }
+    }
+  }
+  return resolved;
+}
+
+function setObject(
+  parameterName: 'options' | 'css',
+  newObject: Partial<Options | CSS>
+): void {
+  if (!isObject(newObject)) {
+    return;
+  }
+  for (const property of Object.keys(newObject)) {
+    if (Object.hasOwn(Convert[parameterName], property) && newObject[property] !== undefined) {
+      (Convert[parameterName] as Record<string, unknown>)[property] = newObject[property];
+    }
+  }
+}
+
+/**
+ * CSV conversion utilities for transforming raw CSV strings into 2D arrays or HTML tables.
+ */
+export const Convert = {
+
+  /** Default conversion options. */
+  options: {
     labels: true,
     quote: '"',
     separator: ',',
     CRLF: '\r\n',
-  };
+  } as Partial<Options>,
 
-  export let css: CSS = {
+  /** Default CSS classes applied by `Convert.table()`. */
+  css: {
     table: '',
     th: '',
-  };
+  } as CSS,
 
-  export function setOptions(newOptions: Partial<Options>): void {
+  /**
+   * Updates the persistent default conversion options on `Convert.options`.
+   *
+   * @param newOptions - Partial options to merge into `Convert.options`.
+   */
+  setOptions(newOptions: Partial<Options>): void {
     setObject('options', newOptions);
-  }
+  },
 
-  export function setCSS(newCSS: Partial<CSS>): void {
+  /**
+   * Updates the persistent default CSS class names on `Convert.css`.
+   *
+   * @param newCSS - Partial CSS configuration to merge into `Convert.css`.
+   */
+  setCSS(newCSS: Partial<CSS>): void {
     setObject('css', newCSS);
-  }
+  },
 
-  export function array(
+  /**
+   * Parses a CSV string into a 2D array of cell strings.
+   *
+   * @param data - Raw CSV string to parse.
+   * @param options - Optional per-call overrides for conversion options.
+   * @returns A 2D array of rows and cells, or `false` if `data` is not a non-empty string.
+   */
+  array(
     data: string,
     options?: Partial<Options>
-  ): Array<Array<string>> | false {
+  ): string[][] | false {
     if (!isString(data, '!0')) {
       return false;
     }
@@ -39,30 +108,39 @@ export namespace Convert {
     const separator = opts.separator as string;
     const quote = opts.quote as string;
 
-    const rows: Array<string> = data.trim().split(crlf).filter(Boolean);
+    const cleaned = data.startsWith('\uFEFF') ? data.slice(1) : data;
+    const rows: string[] = cleaned.trim().split(crlf).filter(Boolean);
     if (!rows.length) {
       return false;
     }
 
-    const array: Array<Array<string>> = [];
+    const array: string[][] = [];
 
     for (const row of rows) {
-      const cells: Array<string> = row.split(separator);
+      const cells: string[] = row.split(separator);
       if (quote) {
         const qLen = quote.length;
         for (let i = 0; i < cells.length; i++) {
           const cell = cells[i];
           if (cell.length >= qLen * 2 && cell.startsWith(quote) && cell.endsWith(quote)) {
-            cells[i] = cell.slice(qLen, -qLen).split(quote + quote).join(quote);
+            cells[i] = cell.slice(qLen, -qLen).replaceAll(quote + quote, quote);
           }
         }
       }
       array.push(cells);
     }
     return array;
-  }
+  },
 
-  export function table(
+  /**
+   * Converts a CSV string into an HTML `<table>` string.
+   *
+   * @param data - Raw CSV string to convert.
+   * @param options - Optional per-call overrides for conversion options.
+   * @param css - Optional per-call CSS classes for `<table>` and `<th>` elements.
+   * @returns HTML `<table>` string, or `false` if `data` is invalid.
+   */
+  table(
     data: string,
     options?: Partial<Options>,
     css?: Partial<CSS>
@@ -73,7 +151,7 @@ export namespace Convert {
     const rows = Convert.array(data, opts);
     if (rows) {
       let thead = '';
-      const table: Array<string> = [];
+      const table: string[] = [];
       for (let i = 0; i < rows.length; i++) {
         let cellType: CellTypes = 'td';
         let style = '';
@@ -92,59 +170,6 @@ export namespace Convert {
       return `<table${style}>${thead}<tbody>${table.join('')}</tbody></table>`;
     }
     return false;
-  }
+  },
 
-  function createTr(row: Array<string>, cellType: CellTypes, style: string): string {
-    const escapedCells = row.map(cell => escapeHtml(cell));
-    return (
-      `<tr><${cellType}${style}>` +
-      escapedCells.join(`</${cellType}><${cellType}${style}>`) +
-      `</${cellType}></tr>`
-    );
-  }
-
-  function escapeHtml(str: string): string {
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-  function resolveObject<T extends Record<string, any>>(
-    base: T,
-    overrides?: Partial<T>
-  ): T {
-    const resolved = { ...base };
-    if (isObject(overrides)) {
-      for (const property of Object.keys(overrides)) {
-        if (
-          Object.prototype.hasOwnProperty.call(resolved, property) &&
-          overrides[property] !== undefined
-        ) {
-          (resolved as Record<string, unknown>)[property] = overrides[property];
-        }
-      }
-    }
-    return resolved;
-  }
-
-  function setObject(
-    parameterName: 'options' | 'css',
-    newObject: Partial<Options | CSS>
-  ): void {
-    if (!isObject(newObject)) {
-      return;
-    }
-    for (const property of Object.keys(newObject)) {
-      if (
-        Object.prototype.hasOwnProperty.call(Convert[parameterName], property) &&
-        newObject[property] !== undefined
-      ) {
-        Convert[parameterName][property] = newObject[property] as any;
-      }
-    }
-  }
-
-}
+};

@@ -2,11 +2,12 @@ Version 0.4.0 (November 8th 2026)
 -----------------------------
  * Update to `@dwtechs/checkard` (`3.7.0`)
  * Migrate package to ESM-only (`"type": "module"`, Node.js `>=22`) and modernize Rollup/TypeScript/Jest build pipeline
- * Refactor `Export` and `Convert` from static classes to TypeScript namespaces
+ * Refactor `Export` and `Convert` from static classes to plain exported module objects
  * Fix `Export.setOptions` and `Convert.setOptions` ignoring falsy option values (`labels: false`, `quote: ''`)
  * Fix static option and auto-generated `customLabels` mutation leaking across subsequent `Export.data` and `Convert` calls
  * Replace deprecated `escape()` in `Export.download` with `Blob` + `URL.createObjectURL` (and `encodeURIComponent` fallback) for proper UTF-8 support
  * Escape embedded quotes in CSV fields and support multi-character or empty separators
+ * Add `bom` option to prepend UTF-8 Byte Order Mark (`\uFEFF`) for Excel compatibility and strip leading BOM in `Convert.array`
  * Add input validation on `Export.data` and `Convert.array`, HTML entity escaping in `Convert.table`, and graceful fallback/cancellation handling in `Export.save`
 
 Version 0.3.1 (May 11th 2022)

@@ -46,8 +46,8 @@ describe('Convert', () => {
       expect(result).toEqual([['He said "hi"', 'unquoted', 'plain']]);
     });
 
-    test('handles quote: "" option without stripping characters', () => {
-      const input = 'a,b,c\r\n1,2,3';
+    test('handles quote: "" option without stripping characters and strips leading UTF-8 BOM', () => {
+      const input = '\uFEFFa,b,c\r\n1,2,3';
       const result = Convert.array(input, {
         quote: '',
         CRLF: undefined,

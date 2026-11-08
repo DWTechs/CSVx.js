@@ -40,35 +40,35 @@ import { Export, Convert } from '@dwtechs/csvx';
 // Convert an array to CSV file
 const array = [
   {
-    firstname:'Galileo',
-    lastname:'Galiléi',
-    born:1564,
-    died:1642
+    firstname: 'Galileo',
+    lastname: 'Galiléi',
+    born: 1564,
+    died: 1642
   },
   {
-    firstname:'Nikola',
-    lastname:'Tesla',
-    city:'Smiljan',
-    born:1856,
-    died:1943
+    firstname: 'Nikola',
+    lastname: 'Tesla',
+    city: 'Smiljan',
+    born: 1856,
+    died: 1943
   },
   {
-    firstname:'Albert',
-    born:1879,
-    lastname:'Einstein',
-    died:1955
+    firstname: 'Albert',
+    born: 1879,
+    lastname: 'Einstein',
+    died: 1955
   }
 ];
 const customLabels = {
   firstname: 'First name',
-  lastname: 'Last name', 
+  lastname: 'Last name',
   city: 'City',
   born: 'Born',
   died: 'Died'
 };
 const exportButton = document.getElementById('csv');
-exportButton.addEventListener('click', function() {
-  Export.data('scientists',array,{separator: ';', customLabels: customLabels});// ; separator for excel friendly imports
+exportButton.addEventListener('click', () => {
+  Export.data('scientists', array, { separator: ';', customLabels }); // ; separator for excel friendly imports
 });
 
 // Convert CSV data to HTML table
@@ -77,7 +77,7 @@ const data = '"Firstname";"Lastname";"Born";"Died"\r\n\
 "Nikola";"Tesla";"1856";"1943"\r\n\
 "Albert";"Einstein";"1879";"1955"';
 
-document.getElementById("table").innerHTML = Convert.table(data,{separator: ';'}, {table: 'table table-striped'});
+document.getElementById('table').innerHTML = Convert.table(data, { separator: ';' }, { table: 'table table-striped' });
 ```
 
 ### TypeScript
@@ -86,41 +86,41 @@ document.getElementById("table").innerHTML = Convert.table(data,{separator: ';'}
 <button (click)="exportCSV()">Export CSV</button> <!-- ANGULAR -->
 ```
 
-```javascript
+```typescript
 import { Export } from '@dwtechs/csvx';
 
-public exportCSV():void {
+public async exportCSV(): Promise<boolean> {
 
-  const array: { [key: string]: string | number; }[] = [
+  const array: Record<string, string | number>[] = [
     {
-      firstname:'Galileo',
-      lastname:'Galiléi',
-      born:1564,
-      died:1642
+      firstname: 'Galileo',
+      lastname: 'Galiléi',
+      born: 1564,
+      died: 1642
     },
     {
-      firstname:'Nikola',
-      lastname:'Tesla',
-      city:'Smiljan',
-      born:1856,
-      died:1943
+      firstname: 'Nikola',
+      lastname: 'Tesla',
+      city: 'Smiljan',
+      born: 1856,
+      died: 1943
     },
     {
-      firstname:'Albert',
-      born:1879,
-      lastname:'Einstein',
-      died:1955
+      firstname: 'Albert',
+      born: 1879,
+      lastname: 'Einstein',
+      died: 1955
     }
   ];
   const customLabels = {
     firstname: 'First name',
-    lastname: 'Last name', 
+    lastname: 'Last name',
     city: 'City',
     born: 'Born',
     died: 'Died'
   };
 
-  Export.data('scientists', array, {separator: ';', customLabels: customLabels});
+  return await Export.data('scientists', array, { separator: ';', customLabels });
 
 }
 ```
@@ -129,23 +129,23 @@ public exportCSV():void {
 
 ```typescript
 
-namespace Convert {
-  let options: Partial<Options>;
-  let css: CSS;
-  function setOptions(options: Partial<Options>): void;
-  function setCSS(css: Partial<CSS>): void;
+const Convert: {
+  options: Partial<Options>;
+  css: CSS;
+  setOptions(options: Partial<Options>): void;
+  setCSS(css: Partial<CSS>): void;
   // convert CSV to Javascript array
-  function array(data: string, options?: Partial<Options>): Array<Array<string>> | false;
+  array(data: string, options?: Partial<Options>): string[][] | false;
   // convert CSV to HTML table
-  function table(data: string, options?: Partial<Options>, css?: Partial<CSS>): string | false;
-}
+  table(data: string, options?: Partial<Options>, css?: Partial<CSS>): string | false;
+};
 
-namespace Export {
-  let options: Options;
+const Export: {
+  options: Options;
   // Export CSV file
-  function data(filename: string, data: { [key: string]: number|string }[], options?: Partial<Options>): Promise<boolean>;
-  function setOptions(options: Partial<Options>): void;
-}
+  data(filename: string, data: Record<string, number | string>[], options?: Partial<Options>): Promise<boolean>;
+  setOptions(options: Partial<Options>): void;
+};
 
 interface Options {
   data?: string; // default : 'text/csv'
@@ -154,8 +154,9 @@ interface Options {
   quote?: string; // default : '"'
   separator?: string; // default : ','
   CRLF?: string; // default : '\r\n'
-  customLabels?: { [key: string]: string } | null; // default : null
+  customLabels?: Record<string, string> | null; // default : null
   save?: boolean; // default : false **
+  bom?: boolean; // default : false (prepends UTF-8 BOM \uFEFF for Excel compatibility)
 }
 
 interface CSS {
